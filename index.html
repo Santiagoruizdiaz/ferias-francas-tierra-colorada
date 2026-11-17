@@ -1,0 +1,887 @@
+<!doctype html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ferias Francas de la Tierra Colorada · De la chacra a tu mesa</title>
+  <meta name="description" content="Asociación Civil Ferias Francas de la Tierra Colorada (@feriasfrancast.c). 21 ferias activas en Posadas, 412 familias productoras de Misiones.">
+  <meta property="og:title" content="Asoc. Civil Ferias Francas de la Tierra Colorada">
+  <meta property="og:description" content="De la chacra a tu mesa: encontrá tu feria franca más cercana en Posadas, de martes a domingo de 6 a 13 hs.">
+  <meta property="og:image" content="assets/logo-blanco.png">
+  <link rel="icon" type="image/png" href="assets/logo-blanco.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;0,9..144,800;1,9..144,400;1,9..144,600&family=Instrument+Serif:ital@0;1&family=Montserrat:wght@500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Textura sutil de papel cálido -->
+  <div class="grain" aria-hidden="true"></div>
+
+  <!-- Cabecera superior en una sola línea -->
+  <header class="hud-header">
+    <div class="hud-bar">
+      <div class="hud-left">
+        <button type="button" class="hud-seal" data-goto="inicio" aria-label="Ir a Inicio">
+          <img src="assets/logo-transparente.png" alt="Logo Ferias Francas de la Tierra Colorada">
+        </button>
+        <button type="button" class="hud-file-pill" data-goto="ferias" id="hud-status-pill">
+          <span class="hud-file-dot" id="hud-status-dot"></span>
+          <span id="hud-status-label">Puestos de Posadas · cargando</span>
+        </button>
+      </div>
+
+      <nav class="hud-tabs" aria-label="Secciones principales">
+        <button type="button" class="hud-tab is-active" data-goto="inicio">Inicio</button>
+        <button type="button" class="hud-tab" data-goto="ferias">21 Ferias</button>
+        <button type="button" class="hud-tab" data-goto="mesa">La Mesa e IPEC</button>
+        <button type="button" class="hud-tab" data-goto="historia">Historia y Voz</button>
+        <button type="button" class="hud-tab" data-goto="comunidad">Comunidad</button>
+      </nav>
+
+      <div class="hud-right">
+        <button type="button" class="hud-index-btn" id="index-toggle" aria-expanded="false" aria-controls="index-drawer">
+          <span>secciones</span>
+          <span class="hud-index-icon" aria-hidden="true"><i></i><i></i></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Cajón Escénico "secciones =" con fotos encintadas como álbum de feria -->
+  <aside class="index-drawer" id="index-drawer" aria-hidden="true">
+    <div class="index-drawer__head">
+      <span class="hand-note">De la colonia a tu barrio · @feriasfrancast.c</span>
+      <h2>Elegí por dónde recorrer <span class="serif-accent" style="color: var(--hoja);">nuestras ferias</span></h2>
+    </div>
+
+    <div class="index-cards-grid">
+      <button type="button" class="index-card is-current" data-goto="inicio" style="--a: -2.4deg;">
+        <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+        <div class="index-card__pic"><img src="assets/compra.jpg" alt="Inicio y manifiesto de las Ferias Francas"></div>
+        <span class="index-card__num">01</span>
+        <span class="index-card__title">Inicio · La chacra</span>
+        <span class="index-card__desc">Quiénes somos y el trato directo en el tablón</span>
+      </button>
+
+      <button type="button" class="index-card" data-goto="ferias" style="--a: 1.8deg;">
+        <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+        <div class="index-card__pic"><img src="assets/feria.jpg" alt="21 Ferias activas en Posadas"></div>
+        <span class="index-card__num">02</span>
+        <span class="index-card__title">21 Ferias y Horarios</span>
+        <span class="index-card__desc">Buscá tu puesto por día, barrio y mapa</span>
+      </button>
+
+      <button type="button" class="index-card" data-goto="mesa" style="--a: -1.4deg;">
+        <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+        <div class="index-card__pic"><img src="assets/puesto.jpg" alt="Productos frescos y comparación IPEC"></div>
+        <span class="index-card__num">03</span>
+        <span class="index-card__title">La Mesa e IPEC</span>
+        <span class="index-card__desc">Alimentos de estación y cuentas claras</span>
+      </button>
+
+      <button type="button" class="index-card" data-goto="historia" style="--a: 2.2deg;">
+        <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+        <div class="index-card__pic"><img src="assets/balsa.jpg" alt="Historia desde la balsa de 1995"></div>
+        <span class="index-card__num">04</span>
+        <span class="index-card__title">Historia y Voz</span>
+        <span class="index-card__desc">El video de Malena, la balsa de 1995 y 9+ municipios</span>
+      </button>
+
+      <button type="button" class="index-card" data-goto="comunidad" style="--a: -2deg;">
+        <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+        <div class="index-card__pic"><img src="assets/productores.jpg" alt="Autogestión solidaria y contacto"></div>
+        <span class="index-card__num">05</span>
+        <span class="index-card__title">Comunidad</span>
+        <span class="index-card__desc">Banco de insumos, créditos solidarios y contacto</span>
+      </button>
+    </div>
+  </aside>
+
+  <main id="main">
+    <!-- ==================================================================
+         PESTAÑA 1: INICIO (Limpio, escénico y bien casero / chacra misionera)
+         ================================================================== -->
+    <section class="tab-view is-active" data-view="inicio" aria-label="Inicio">
+      <!-- Escena 1: El Escenario de Chacra y Puesto -->
+      <div class="stage-room" id="stage-room">
+        <div class="container stage-room__grid">
+          <div>
+            <span class="stage-eyebrow">
+              <svg class="inline-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 21V11"></path>
+                <path d="M12 13c-4.5 0-7-2.8-7-7 4.2 0 7 2.5 7 7Z"></path>
+                <path d="M12 11c4.5 0 7-2.8 7-7-4.2 0-7 2.5-7 7Z"></path>
+              </svg>
+              Asociación Civil · Posadas y colonias de Misiones · Desde 1998
+            </span>
+
+            <h1 class="stage-title">
+              <span class="stage-title__main" id="hero-chars">FERIAS FRANCAS</span>
+              <span class="stage-title__sub">de la Tierra Colorada</span>
+            </h1>
+
+            <div class="stage-notebook">
+              <div class="stage-notebook__copy">
+                <p>Verdura con olor a huerta, mandioca recién arrancada de la tierra colorada, queso criollo y pan casero hecho por las mismas familias que te atienden.</p>
+                <p class="stage-handnote">“Acá no hay revendedores: lo que llevás en tu bolsa lo sembró el feriante que está del otro lado del tablón.”</p>
+              </div>
+              <img class="stage-notebook__draw" src="assets/dibujo-transparente.png" alt="Ilustración de la mano sosteniendo la tierra colorada de Misiones y las flores de jacarandá">
+            </div>
+
+            <div class="stage-actions">
+              <button type="button" class="pill-btn" data-goto="ferias">
+                Ver las 21 ferias y horarios →
+              </button>
+              <button type="button" class="pill-btn pill-btn--crema" data-goto="historia">
+                <svg class="inline-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polygon points="6 4 20 12 6 20 6 4"></polygon>
+                </svg>
+                Escuchar a nuestros feriantes
+              </button>
+            </div>
+          </div>
+
+          <div class="stage-visual" id="stage-parallax">
+            <div class="stage-seal-float" data-depth="0.45">
+              <img src="assets/logo-blanco.png" alt="Sello oficial Ferias Francas de la Tierra Colorada">
+            </div>
+
+            <figure class="stage-card-main" data-depth="0.8">
+              <span class="tape-strip" aria-hidden="true"></span>
+              <img src="assets/compra.jpg" alt="Vecinos comprando verduras frescas y mandioca directamente a productoras de la feria">
+              <figcaption class="stage-card-main__cap">
+                <strong>Trato directo en el tablón</strong>
+                <span>Martes a domingo · 6 a 13 hs</span>
+              </figcaption>
+            </figure>
+
+            <figure class="stage-card-side" data-depth="1.25">
+              <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+              <img src="assets/chacra.jpg" alt="Mandiocal creciendo sobre la tierra colorada de la chacra misionera">
+              <p>Chacra misionera · tierra colorada viva</p>
+            </figure>
+
+            <figure class="stage-card-stamp" data-depth="1.05">
+              <span class="tape-strip tape-strip--xs" aria-hidden="true"></span>
+              <img src="assets/mandioca.jpg" alt="Mandioca fresca recién cosechada">
+              <p>Cosecha de la semana</p>
+            </figure>
+          </div>
+        </div>
+
+        <div class="container stage-bottom-strip">
+          <span class="stage-meta-pill" id="stage-live-footer">
+            @feriasfrancast.c · Martes, miércoles, sábados y domingos de 6 a 13 hs
+          </span>
+          <a href="#scene-manifesto" class="scroll-hint" aria-label="Bajar para recorrer">
+            <span>bajá a recorrer</span>
+            <i></i>
+          </a>
+        </div>
+      </div>
+
+      <!-- Divisor orgánico de chacra -->
+      <div class="wave-sep wave-sep--to-crema" aria-hidden="true">
+        <svg viewBox="0 0 1440 44" preserveAspectRatio="none">
+          <path d="M0,18 C240,42 480,4 720,22 C960,40 1200,10 1440,26 L1440,44 L0,44 Z"></path>
+        </svg>
+      </div>
+
+      <!-- Escena 2: Manifiesto Cinético -->
+      <section class="scene-manifesto" id="scene-manifesto">
+        <div class="container manifesto-wrap">
+          <span class="hand-kicker">Del surco al canasto familiar</span>
+          <p class="manifesto-statement" id="manifesto-words">
+            <span class="lit-word" style="--w:0">No</span>
+            <span class="lit-word" style="--w:1">es</span>
+            <span class="lit-word" style="--w:2">solo</span>
+            <span class="lit-word" style="--w:3">un</span>
+            <span class="lit-word" style="--w:4">puesto</span>
+            <span class="lit-word" style="--w:5">en</span>
+            <span class="lit-word" style="--w:6">el</span>
+            <span class="lit-word" style="--w:7">barrio.</span>
+            <span class="lit-word" style="--w:8">Es</span>
+            <span class="lit-word" style="--w:9">traer</span>
+            <span class="lit-word" style="--w:10">alimento</span>
+            <span class="lit-word" style="--w:11">sano</span>
+            <span class="lit-word" style="--w:12">del</span>
+            <span class="lit-word" style="--w:13">interior</span>
+            <span class="lit-word" style="--w:14">sin</span>
+            <span class="strike-wrap">
+              intermediarios:
+              <svg class="strike-svg" viewBox="0 0 220 20" preserveAspectRatio="none" aria-hidden="true">
+                <path d="M 4 12 Q 110 4 216 13" />
+              </svg>
+            </span>
+          </p>
+          <p class="manifesto-punch">
+            (las mismas manos que producen, venden.)
+          </p>
+
+          <div class="manifesto-metrics">
+            <div class="m-metric">
+              <strong>28 años</strong>
+              <span>ininterrumpidos en Posadas (31 en Misiones)</span>
+              <em class="metric-note">Desde sept. 1998 en Villa Cabello</em>
+            </div>
+            <div class="m-metric">
+              <strong>412 familias</strong>
+              <span>socias que producen y viajan desde el interior</span>
+              <em class="metric-note">Chacras de 9+ municipios</em>
+            </div>
+            <div class="m-metric">
+              <strong>+250 ayudas</strong>
+              <span>otorgadas con nuestro Banco de Insumos propio</span>
+              <em class="metric-note">Semillas, polietileno y herramientas</em>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Escena 3: El Pizarrón del Puesto -->
+      <section class="scene-switch" id="scene-switch" data-feria="on">
+        <div class="container switch-grid">
+          <div class="switch-copy">
+            <span class="hand-kicker">Cuentas claras, como en la feria</span>
+            <h2>La misma compra, <span class="serif-accent" style="color: var(--violeta);">con y sin</span> feria franca.</h2>
+            <p>Pasá la tiza de un lado al otro del pizarrón para comparar qué cambia en la frescura, el precio y el destino de cada peso.</p>
+
+            <ul class="switch-bullets" id="switch-bullets">
+              <li>Verduras cosechadas esa misma semana en la chacra.</li>
+              <li>21 de 25 productos relevados más baratos (IPEC Misiones).</li>
+              <li>Ingreso directo para 412 familias productoras del interior.</li>
+            </ul>
+          </div>
+
+          <div class="compare-panel chalkboard-panel">
+            <div class="compare-panel__head">
+              <span class="compare-panel__title">Pizarrón comparativo · Posadas</span>
+              <div class="mode-toggle" role="group" aria-label="Comparar compra en nuestro puesto o en el supermercado">
+                <button type="button" class="mode-toggle__opt" data-mode="off">En el supermercado</button>
+                <button type="button" class="mode-toggle__opt" data-mode="on">En nuestro puesto</button>
+              </div>
+            </div>
+
+            <div class="compare-panel__body" id="compare-body">
+              <div class="compare-row">
+                <div>
+                  <div class="compare-row__label">Origen y frescura</div>
+                  <div class="compare-row__val" id="cmp-origen">Cosechada esta semana en chacras de Misiones</div>
+                </div>
+                <span class="compare-row__pill" id="cmp-origen-pill">Recién cosechado</span>
+              </div>
+
+              <div class="compare-row">
+                <div>
+                  <div class="compare-row__label">Precios medidos (IPEC)</div>
+                  <div class="compare-row__val" id="cmp-precio">Pomelo −72% · Batata −59% · Limón −56%</div>
+                </div>
+                <span class="compare-row__pill" id="cmp-precio-pill">Precio de productor</span>
+              </div>
+
+              <div class="compare-row">
+                <div>
+                  <div class="compare-row__label">Quién recibe tu pago</div>
+                  <div class="compare-row__val" id="cmp-destino">100% a la familia feriante que te atiende</div>
+                </div>
+                <span class="compare-row__pill" id="cmp-destino-pill">A la familia colona</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Escena 4: Pasá por cada rincón -->
+      <section class="scene-doors">
+        <div class="container">
+          <div class="doors-head">
+            <span class="hand-kicker">Recorré sin apuro</span>
+            <h2>Elegí qué querés <span class="serif-accent" style="color: var(--violeta);">mirar hoy</span></h2>
+          </div>
+
+          <div class="doors-grid">
+            <button type="button" class="door-card" data-goto="ferias" style="--tilt: -1.8deg;">
+              <div>
+                <div class="door-card__photo">
+                  <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                  <img src="assets/feria.jpg" alt="Cartel de Ferias Francas">
+                </div>
+                <div class="door-card__num">01</div>
+                <h3>21 Ferias y Horarios</h3>
+                <p>Qué puesto abre hoy, filtros por día, buscador barrial y enlace al mapa.</p>
+              </div>
+              <span class="door-card__go">Buscar mi feria →</span>
+            </button>
+
+            <button type="button" class="door-card" data-goto="mesa" style="--tilt: 1.5deg;">
+              <div>
+                <div class="door-card__photo">
+                  <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                  <img src="assets/puesto.jpg" alt="Mesa de verduras de la Feria Franca">
+                </div>
+                <div class="door-card__num">02</div>
+                <h3>La Mesa e IPEC</h3>
+                <p>Rubros de estación, el consejo de Malena y comparativa oficial de precios.</p>
+              </div>
+              <span class="door-card__go">Ver productos y precios →</span>
+            </button>
+
+            <button type="button" class="door-card" data-goto="historia" style="--tilt: -1.2deg;">
+              <div>
+                <div class="door-card__photo">
+                  <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                  <img src="assets/balsa.jpg" alt="La balsa de 1995 hacia Brasil">
+                </div>
+                <div class="door-card__num">03</div>
+                <h3>Historia y Reel</h3>
+                <p>El video de nuestra presidenta, la balsa de 1995 y los 9+ municipios.</p>
+              </div>
+              <span class="door-card__go">Ver video e historia →</span>
+            </button>
+
+            <button type="button" class="door-card" data-goto="comunidad" style="--tilt: 1.8deg;">
+              <div>
+                <div class="door-card__photo">
+                  <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                  <img src="assets/productores.jpg" alt="Camión y productores cargando mercadería">
+                </div>
+                <div class="door-card__num">04</div>
+                <h3>Autogestión y Contacto</h3>
+                <p>Banco de Insumos (+250 beneficios), créditos solidarios y consultas.</p>
+              </div>
+              <span class="door-card__go">Conocer la red y escribir →</span>
+            </button>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- ==================================================================
+         PESTAÑA 2: 21 FERIAS Y HORARIOS
+         ================================================================== -->
+    <section class="tab-view" data-view="ferias" aria-label="21 Ferias y Horarios">
+      <div class="view-hero">
+        <div class="container view-hero__inner">
+          <span class="hand-kicker">Puestos barriales en Posadas</span>
+          <h1>21 ferias activas <span class="serif-accent" style="color: var(--violeta);">cerca tuyo</span></h1>
+          <p>Armamos los tablones de martes a domingo, de <b>6:00 a 13:00 hs</b>. Elegí un día o escribí tu barrio o avenida para encontrar tu sede.</p>
+        </div>
+      </div>
+
+      <div class="tab-section">
+        <div class="container">
+          <div class="today-banner">
+            <div class="today-banner__lead">
+              <div class="today-banner__icon" aria-hidden="true">
+                <svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="16" cy="11" r="4"></circle>
+                  <path d="M16 3v2M8 6l1.4 1.4M24 6l-1.4 1.4M5 12h2M25 12h2"></path>
+                  <path d="M6 19h20l-2 9H8l-2-9Z"></path>
+                  <path d="M10 19c1-3 3.5-5 6-5s5 2 6 5"></path>
+                </svg>
+              </div>
+              <div>
+                <h2 id="today-title">Ferias de hoy</h2>
+                <p id="today-subtitle">Consultando el cronograma semanal...</p>
+                <span class="today-banner__hand">Traé tu bolsa que desde las 6 estamos</span>
+              </div>
+            </div>
+            <button type="button" class="pill-btn pill-btn--violeta" id="btn-filter-today">
+              Ver ferias de hoy
+            </button>
+          </div>
+
+          <div class="ferias-controls">
+            <div class="day-tabs" role="tablist" aria-label="Filtrar ferias por día">
+              <button type="button" class="day-tab is-active" data-day="todas" role="tab" aria-selected="true">
+                Todas <span class="day-tab__count">21</span>
+              </button>
+              <button type="button" class="day-tab" data-day="hoy" role="tab" aria-selected="false">
+                Próxima / Hoy <span class="day-tab__count" id="count-hoy">0</span>
+              </button>
+              <button type="button" class="day-tab" data-day="Martes" role="tab" aria-selected="false">
+                Martes <span class="day-tab__count">1</span>
+              </button>
+              <button type="button" class="day-tab" data-day="Miércoles" role="tab" aria-selected="false">
+                Miércoles <span class="day-tab__count">6</span>
+              </button>
+              <button type="button" class="day-tab" data-day="Sábado" role="tab" aria-selected="false">
+                Sábado <span class="day-tab__count">10</span>
+              </button>
+              <button type="button" class="day-tab" data-day="Domingo" role="tab" aria-selected="false">
+                Domingo <span class="day-tab__count">4</span>
+              </button>
+            </div>
+
+            <div class="search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"></circle>
+                <path d="M20 20l-3.5-3.5" stroke-linecap="round"></path>
+              </svg>
+              <label for="ferias-search" class="sr-only">Buscar feria por barrio o calle</label>
+              <input type="search" id="ferias-search" placeholder="Buscá tu barrio o avenida (ej. Itaembé, Villa Cabello)...">
+            </div>
+          </div>
+
+          <div class="ferias-grid" id="ferias-grid" aria-live="polite"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PESTAÑA 3: LA MESA E IPEC (Productos + Tip + Precios IPEC)
+         ================================================================== -->
+    <section class="tab-view" data-view="mesa" aria-label="Productos de la Chacra y Precios IPEC">
+      <div class="view-hero">
+        <div class="container view-hero__inner">
+          <span class="hand-kicker">Qué encontrás y cuánto ahorrás</span>
+          <h1>De la chacra <span class="serif-accent" style="color: var(--violeta);">a tu bolsa</span></h1>
+          <p>Hacés toda la compra semanal en un solo lugar, con alimentos frescos cosechados esa misma semana en la colonia.</p>
+        </div>
+      </div>
+
+      <div class="tab-section">
+        <div class="container">
+          <div class="cat-pills" id="cat-pills" role="group" aria-label="Filtrar productos por categoría">
+            <button type="button" class="cat-pill is-active" data-cat="todos">Todos los rubros</button>
+            <button type="button" class="cat-pill" data-cat="huerta">Verduras y Frutas</button>
+            <button type="button" class="cat-pill" data-cat="chacra">Mandioca y Raíces</button>
+            <button type="button" class="cat-pill" data-cat="granja">Granja y Lácteos</button>
+            <button type="button" class="cat-pill" data-cat="elaborados">Panificados y Dulces</button>
+            <button type="button" class="cat-pill" data-cat="monte">Yuyos y Plantas</button>
+          </div>
+
+          <div class="productos-grid" id="productos-grid"></div>
+
+          <aside class="tip-banner">
+            <div class="tip-banner__photo">
+              <span class="tape-strip" aria-hidden="true"></span>
+              <img src="assets/puesto.jpg" alt="Puesto lleno de verduras frescas y vecinos comprando en la Feria Franca">
+            </div>
+            <div class="tip-banner__body">
+              <div class="tip-banner__kicker">Consejo desde el puesto</div>
+              <p class="tip-banner__quote">
+                “Vení temprano: abrimos a las <b>6 de la mañana</b> y a primera hora hay más variedad. En días de calor, las hojas duran más frescas si las comprás antes del mediodía.”
+              </p>
+              <div class="tip-banner__author">
+                <span class="tip-banner__sig">Malena Ruiz Díaz</span> · Presidenta de Asoc. Civil Ferias Francas de la Tierra Colorada (Pulso News 12)
+              </div>
+            </div>
+          </aside>
+        </div>
+      </div>
+
+      <div class="ipec-block">
+        <div class="container ipec-grid">
+          <div class="ipec-bars">
+            <div class="ipec-row">
+              <div class="ipec-row__head">
+                <span class="ipec-row__name">Pomelo de estación</span>
+                <span class="ipec-row__note">Feria vs. Supermercado</span>
+              </div>
+              <div class="ipec-track">
+                <div class="ipec-bar" style="width: 96%;">−72% más barato</div>
+              </div>
+            </div>
+
+            <div class="ipec-row">
+              <div class="ipec-row__head">
+                <span class="ipec-row__name">Batata misionera</span>
+                <span class="ipec-row__note">Feria vs. Supermercado</span>
+              </div>
+              <div class="ipec-track">
+                <div class="ipec-bar" style="width: 82%;">−59% más barato</div>
+              </div>
+            </div>
+
+            <div class="ipec-row">
+              <div class="ipec-row__head">
+                <span class="ipec-row__name">Limón fresco</span>
+                <span class="ipec-row__note">Feria vs. Supermercado</span>
+              </div>
+              <div class="ipec-track">
+                <div class="ipec-bar" style="width: 78%;">−56% más barato</div>
+              </div>
+            </div>
+
+            <div class="ipec-row">
+              <div class="ipec-row__head">
+                <span class="ipec-row__name">Pollo entero (la excepción transparente)</span>
+                <span class="ipec-row__note">Dato relevado por IPEC</span>
+              </div>
+              <div class="ipec-track">
+                <div class="ipec-bar ipec-bar--contra" style="width: 90%;">66% más barato en el súper</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="ipec-summary">
+            <div class="ipec-summary__big">21 de 25</div>
+            <h3>Productos más económicos en la feria</h3>
+            <p>
+              Al comprar sin intermediarios, cuidás el bolsillo familiar y asegurás una retribución justa para quien trabaja la tierra. En febrero de 2025 el IPEC volvió a registrar diferencias de hasta <b>−80% en cítricos</b>, y desde junio de 2026 actualizó la base del IPFF (con bajas del <b>−1,9% mensual</b> en julio 2026).
+            </p>
+            <p class="ipec-summary__source">
+              Fuente: Índice de Precios de las Ferias Francas (IPFF), IPEC Misiones · Posadas.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PESTAÑA 4: HISTORIA Y VOZ (Reel oficial + Balsa 1995 + Territorio)
+         ================================================================== -->
+    <section class="tab-view" data-view="historia" aria-label="Nuestra Historia y Voz">
+      <div class="view-hero">
+        <div class="container view-hero__inner">
+          <span class="hand-kicker">Nuestra palabra y raíces misioneras</span>
+          <h1>De 7 familias en 1995 a <span class="serif-accent" style="color: var(--violeta);">toda la Tierra Colorada</span></h1>
+          <p>Escuchá a nuestra presidenta, conocé el cruce en balsa que dio origen al movimiento y descubrí desde qué municipios llegan nuestros productores.</p>
+        </div>
+      </div>
+
+      <div class="tab-section">
+        <div class="container voz-grid">
+          <div class="reel-card">
+            <div class="reel-card__head">
+              <img src="assets/logo-transparente.png" alt="Avatar @feriasfrancast.c">
+              <span>@feriasfrancast.c · Video oficial</span>
+            </div>
+            <div class="reel-player-wrap">
+              <video controls preload="metadata" poster="assets/reel-poster.jpg">
+                <source src="assets/reel_ferias_francas.mp4" type="video/mp4">
+                Tu navegador no soporta reproducción de video HTML5.
+              </video>
+            </div>
+            <div class="reel-card__foot">
+              <span>Malena Ruiz Díaz · Presidenta</span>
+              <span>Gobernador Roca · Posadas, Misiones</span>
+            </div>
+          </div>
+
+          <div class="voz-content">
+            <h2>Un nombre aprobado por Asamblea para abrazar a toda la provincia</h2>
+            <p>
+              Nacimos en 1998 en Posadas como Asociación Civil Feria Franca “Ing. Roberto Cametti”. Con el crecimiento de los socios del interior, presentamos un proyecto aprobado en Asamblea para llamarnos <b>Asociación Civil Ferias Francas de la Tierra Colorada</b> y representar a cada productor de Misiones.
+            </p>
+
+            <div class="voz-highlights">
+              <div class="voz-pill-card">
+                <strong>Gestión democrática</strong>
+                <p>Nos regimos por un estatuto social y reglamento interno; los socios eligen libremente a la Comisión Directiva.</p>
+              </div>
+              <div class="voz-pill-card">
+                <strong>Único ingreso familiar</strong>
+                <p>Todas nuestras familias se dedican a la producción primaria y la feria es su sustento principal o único.</p>
+              </div>
+              <div class="voz-pill-card">
+                <strong>Redes, cumbres y comunidad</strong>
+                <p>Impulsamos canales digitales propios, presencia en escuelas, eventos deportivos, fiestas e iglesias.</p>
+              </div>
+              <div class="voz-pill-card">
+                <strong>Primera presidenta mujer</strong>
+                <p>Malena Ruiz Díaz, productora e hija de feriantes de Gobernador Roca, encabeza esta etapa de transformación.</p>
+              </div>
+            </div>
+
+            <div class="nicolas-quote">
+              <img src="assets/feriante.jpg" alt="Joven feriante entregando verdura fresca con una sonrisa">
+              <div>
+                <p>“Nicolás tiene 17 años, es de Los Helechos (Oberá) y cada semana viene con su familia a la feria a vender lo que producen en su chacra.”</p>
+                <span>Una nueva generación de feriantes · @feriasfrancast.c</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-section tab-section--lila">
+        <div class="container">
+          <div class="timeline">
+            <article class="timeline-card">
+              <div class="timeline-card__media">
+                <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                <img src="assets/balsa.jpg" alt="Balsa cruzando el río Uruguay entre Argentina y Brasil" class="timeline-card__img">
+              </div>
+              <div class="timeline-card__body">
+                <span class="timeline-card__year">26 / 08 / 1995 · Oberá</span>
+                <h3>Una balsa y el primer puesto</h3>
+                <p>Ante la crisis del tabaco, el té y la madera, colonos del MAM junto a INTA Cambio Rural y el municipio cruzaron en balsa a Santa Rosa (Brasil). Siete familias —con las mujeres al frente— abrieron la primera feria en Oberá y a las 10 AM vendieron todo. Día Provincial de las Ferias Francas (Ley VI N° 164).</p>
+              </div>
+            </article>
+
+            <article class="timeline-card">
+              <div class="timeline-card__media">
+                <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                <img src="assets/feria.jpg" alt="Cartel tradicional de Ferias Francas de Misiones" class="timeline-card__img">
+              </div>
+              <div class="timeline-card__body">
+                <span class="timeline-card__year">Septiembre 1998 · Posadas</span>
+                <h3>La llegada a Villa Cabello</h3>
+                <p>Con el acompañamiento de Cáritas, don Oscar y el Ing. Roberto Cametti, la feria desembarcó en Villa Cabello. Allí comenzó la historia de nuestra asociación en la capital provincial, cumpliendo 28 años de encuentro entre el campo y la ciudad.</p>
+              </div>
+            </article>
+
+            <article class="timeline-card">
+              <div class="timeline-card__media">
+                <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+                <img src="assets/pepinos.jpg" alt="Pepinos encurtidos artesanales de la feria" class="timeline-card__img">
+              </div>
+              <div class="timeline-card__body">
+                <span class="timeline-card__year">2025 – 2026 · Presente</span>
+                <h3>Identidad Tierra Colorada</h3>
+                <p>Sumamos pagos electrónicos, sorteos para vecinos, 21 ferias activas en Posadas y nuevos alimentos elaborados como mandioca pelada, rúcula, bok choy o kimchi junto a los encurtidos, chipas y verduras de siempre.</p>
+              </div>
+            </article>
+          </div>
+
+          <div class="municipios-box">
+            <div class="municipios-photo-wrap">
+              <span class="tape-strip tape-strip--sm" aria-hidden="true"></span>
+              <img src="assets/productores.jpg" alt="Productores cargando mercadería en la colonia para viajar a la feria" class="municipios-photo">
+            </div>
+            <div>
+              <h3>Interior y ciudad en la misma mesa</h3>
+              <p>Cada madrugada de lluvia, sol o frío, nuestros <b>412 socios</b> cargan sus productos desde distintas colonias y municipios de Misiones para llegar antes de las 6 de la mañana a Posadas.</p>
+              <div class="municipios-chips" aria-label="Municipios de procedencia de los socios">
+                <span class="muni-chip">El Soberbio</span>
+                <span class="muni-chip">Panambí</span>
+                <span class="muni-chip">Apóstoles</span>
+                <span class="muni-chip">Oberá</span>
+                <span class="muni-chip">Gobernador Roca</span>
+                <span class="muni-chip">Cerro Azul</span>
+                <span class="muni-chip">Leandro N. Alem</span>
+                <span class="muni-chip">Los Helechos</span>
+                <span class="muni-chip">Posadas</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================================================================
+         PESTAÑA 5: COMUNIDAD (Autogestión + Contacto)
+         ================================================================== -->
+    <section class="tab-view" data-view="comunidad" aria-label="Autogestión y Contacto">
+      <div class="view-hero">
+        <div class="container view-hero__inner">
+          <span class="hand-kicker">Mucho más que una feria</span>
+          <h1>Autogestión solidaria y <span class="serif-accent" style="color: var(--violeta);">contacto directo</span></h1>
+          <p>Somos una entidad civil independiente sostenida por sus socios. Conocé nuestras redes de apoyo mutuo y escribinos directamente.</p>
+        </div>
+      </div>
+
+      <div class="tab-section">
+        <div class="container">
+          <div class="auto-grid">
+            <article class="auto-card">
+              <div class="auto-card__num">+250</div>
+              <span class="auto-card__sub">ayudas entregadas</span>
+              <h3>Banco de Insumos y Microcréditos</h3>
+              <p>Gestionamos dos fondos rotatorios propios: un <b>Banco de Insumos y Herramientas</b> y una línea de <b>créditos solidarios</b> que retornan a la asociación para volver a ayudar al siguiente compañero.</p>
+            </article>
+
+            <article class="auto-card auto-card--tierra">
+              <div class="auto-card__icon" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M9 15a5 5 0 0 1 .4-9.9A6.5 6.5 0 0 1 22 4.5a4.5 4.5 0 0 1 4.5 6.8"></path>
+                  <path d="M12 16l-1.2 2.8M18 16l-1.2 2.8M24 16l-1.2 2.8"></path>
+                  <path d="M6 29v-5.5L18 19l12 4.5V29"></path>
+                  <path d="M14 29v-4h8v4"></path>
+                </svg>
+              </div>
+              <h3>Sostén frente al clima y el barro</h3>
+              <p>Cuando tormentas, granizo o lluvias dañan invernaderos y caminos rurales (donde aún se saca carga en carro con bueyes), nuestra red ayuda a reponer polietileno, semillas y volver a producir.</p>
+            </article>
+
+            <article class="auto-card auto-card--verde">
+              <div class="auto-card__icon auto-card__icon--verde" aria-hidden="true">
+                <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18 19V11"></path>
+                  <path d="M18 13c-3.5 0-5.5-2.2-5.5-5.5 3.3 0 5.5 2 5.5 5.5Z"></path>
+                  <path d="M18 11c3.5 0 5.5-2.2 5.5-5.5-3.3 0-5.5 2-5.5 5.5Z"></path>
+                  <path d="M6 23l5-3 6 3 6-3 7 3.5-5.5 6.5H11.5L6 23Z"></path>
+                </svg>
+              </div>
+              <h3>Ayuda mutua e infraestructura</h3>
+              <p>Sostenida por las cuotas societarias, la entidad mantiene mesas, limpieza, seguridad y traslados en las 21 ferias, y organiza rifas y bonos solidarios ante emergencias de salud de algún socio.</p>
+            </article>
+          </div>
+
+          <div class="auto-banner">
+            <div>
+              <h3>Independencia con mesas de diálogo abiertas</h3>
+              <p>No somos un ente gubernamental: nos sostenemos con el aporte de nuestros asociados y dialogamos con municipios, provincia y nación por mejores caminos rurales, infraestructura, asistencia técnica y financiamiento.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab-section tab-section--lila">
+        <div class="container contacto-grid">
+          <div class="contacto-info">
+            <h2>Canales oficiales</h2>
+            <p>Seguinos en nuestra cuenta renovada para enterarte de sorteos, nuevas sedes, productos de temporada y avisos por lluvia.</p>
+
+            <div class="social-cards">
+              <a href="https://www.instagram.com/feriasfrancast.c/" target="_blank" rel="noopener noreferrer" class="social-item">
+                <div>
+                  <span class="social-item__title">Instagram oficial</span>
+                  <span class="social-item__sub">@feriasfrancast.c</span>
+                </div>
+                <span class="pill-btn pill-btn--violeta pill-btn--sm">Seguir →</span>
+              </a>
+
+              <a href="https://www.facebook.com/search/top?q=Asociacion%20Civil%20Ferias%20Francas%20de%20la%20Tierra%20Colorada" target="_blank" rel="noopener noreferrer" class="social-item">
+                <div>
+                  <span class="social-item__title">Facebook institucional</span>
+                  <span class="social-item__sub">Asoc. Civil Ferias Francas de la Tierra Colorada</span>
+                </div>
+                <span class="pill-btn pill-btn--crema pill-btn--sm">Visitar →</span>
+              </a>
+
+              <div class="social-item">
+                <div>
+                  <span class="social-item__title">Horario general en Posadas</span>
+                  <span class="social-item__sub">Martes, Miércoles, Sábados y Domingos · 6:00 a 13:00 hs</span>
+                </div>
+                <span class="badge-tag badge-tag--verde">21 sedes</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="contacto-form-card">
+            <div class="form-tabs" role="tablist" aria-label="Tipo de consulta">
+              <button type="button" class="form-tab is-active" data-tab="vecino">Soy vecino/a</button>
+              <button type="button" class="form-tab" data-tab="feriante">Quiero asociarme</button>
+              <button type="button" class="form-tab" data-tab="evento">Invitar a evento</button>
+            </div>
+
+            <form id="contact-form">
+              <div class="form-row">
+                <label for="f-nombre">Tu nombre y apellido</label>
+                <input type="text" id="f-nombre" required placeholder="Ej. Laura González">
+              </div>
+
+              <div class="form-row">
+                <label for="f-zona" id="label-zona">Tu barrio o feria de interés</label>
+                <input type="text" id="f-zona" required placeholder="Ej. Villa Cabello / Itaembé Guazú">
+              </div>
+
+              <div class="form-row">
+                <label for="f-detalle" id="label-detalle">¿Qué querés consultar?</label>
+                <textarea id="f-detalle" rows="3" required placeholder="Ej. Quiero saber si este miércoles abre la feria y si llevan quesos y mandioca..."></textarea>
+              </div>
+
+              <button type="submit" class="pill-btn pill-btn--violeta" style="width: 100%;">
+                Preparar mensaje para la Asociación
+              </button>
+            </form>
+
+            <div class="form-result" id="form-result" aria-live="polite">
+              <strong>Mensaje armado para mandar a la feria</strong>
+              <p style="font-size: 0.84rem; margin-top: 4px;">Copiá este texto y envialo por mensaje directo a <b>@feriasfrancast.c</b>:</p>
+              <pre id="form-preview"></pre>
+              <div class="form-result__actions">
+                <button type="button" class="pill-btn pill-btn--sm" id="btn-copy-msg">Copiar mensaje</button>
+                <a href="https://www.instagram.com/feriasfrancast.c/" target="_blank" rel="noopener noreferrer" class="pill-btn pill-btn--violeta pill-btn--sm">Abrir Instagram</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer Institucional -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <img src="assets/logo-blanco.png" alt="Logo Ferias Francas de la Tierra Colorada">
+          <div>
+            <h4>Ferias Francas de la Tierra Colorada</h4>
+            <p>Asociación Civil · @feriasfrancast.c · Posadas, Misiones</p>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h5>Pestañas del sitio</h5>
+          <ul>
+            <li><button type="button" data-goto="inicio">Inicio · La chacra</button></li>
+            <li><button type="button" data-goto="ferias">21 Ferias y Horarios</button></li>
+            <li><button type="button" data-goto="mesa">La Mesa e IPEC</button></li>
+            <li><button type="button" data-goto="historia">Historia y Reel</button></li>
+          </ul>
+        </div>
+
+        <div class="footer-col">
+          <h5>Institucional</h5>
+          <ul>
+            <li><button type="button" data-goto="comunidad">Autogestión y Contacto</button></li>
+            <li><a href="https://www.instagram.com/feriasfrancast.c/" target="_blank" rel="noopener noreferrer">Instagram @feriasfrancast.c</a></li>
+            <li class="demo-only"><button type="button" id="open-pitch-footer">Ver Propuesta Web Oficial</button></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="firma-pie">
+        <span>Asoc. Civil Ferias Francas de la Tierra Colorada</span>
+      </div>
+      <p class="footer-legal">
+        De la chacra a tu mesa · Posadas, Provincia de Misiones, Argentina · Propuesta web oficial 2026
+      </p>
+    </div>
+  </footer>
+
+  <!-- Modal Ejecutivo: Propuesta Web Oficial -->
+  <div class="modal-backdrop" id="pitch-modal" role="dialog" aria-modal="true" aria-labelledby="pitch-title">
+    <div class="modal-box">
+      <button type="button" class="modal-close" id="close-pitch-modal" aria-label="Cerrar ventana">&times;</button>
+      <span class="hand-kicker">Propuesta para Comisión Directiva</span>
+      <h3 id="pitch-title">Convertir esta demo en la Web Oficial de @feriasfrancast.c</h3>
+      <p style="margin-top: 10px; font-size: 0.95rem; font-weight: 500;">
+        Este sitio fue diseñado siguiendo la identidad oficial de la <b>Asociación Civil Ferias Francas de la Tierra Colorada</b> (paleta lila, tierra colorada, violeta jacarandá, logo oficial, reel y cifras reales) con un tono cercano y de chacra para acompañar a cada vecino.
+      </p>
+
+      <div class="pitch-list">
+        <div class="pitch-item">
+          <span class="pitch-num">01</span>
+          <strong>Buscador de las 21 ferias 24/7</strong>
+          <p>Quien busca “feria franca Posadas hoy” encuentra al instante qué sedes abren y el enlace al mapa.</p>
+        </div>
+        <div class="pitch-item">
+          <span class="pitch-num">02</span>
+          <strong>Respaldo institucional real</strong>
+          <p>Destaca la conducción democrática, los 412 socios del interior, el Banco de Insumos (+250 beneficios) y la red solidaria.</p>
+        </div>
+        <div class="pitch-item">
+          <span class="pitch-num">03</span>
+          <strong>Integración con @feriasfrancast.c</strong>
+          <p>Muestra el reel oficial, la comparativa del IPEC y el mensaje en primera persona sin depender solo del algoritmo.</p>
+        </div>
+        <div class="pitch-item">
+          <span class="pitch-num">04</span>
+          <strong>Lista para dominio propio</strong>
+          <p>Rápida en celulares, editable fácilmente ante nuevas ferias y lista para publicarse en dominio oficial.</p>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="pill-btn pill-btn--crema pill-btn--sm" id="toggle-clean-preview">
+          Ocultar enlace de propuesta (Vista limpia)
+        </button>
+        <button type="button" class="pill-btn pill-btn--violeta pill-btn--sm" id="close-pitch-confirm">
+          Seguir recorriendo el sitio
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
