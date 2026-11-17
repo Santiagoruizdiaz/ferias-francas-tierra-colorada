@@ -333,6 +333,21 @@ function normalizarTexto(texto) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+function buscarProximaJornada(idxActual) {
+  for (let offset = 1; offset <= 7; offset++) {
+    const sigNombre = DIAS_SEMANA[(idxActual + offset) % 7];
+    const sigFerias = FERIAS_DATA.filter((f) => f.dia === sigNombre);
+    if (sigFerias.length > 0) {
+      return { diaObjetivo: sigNombre, offset, ferias: sigFerias };
+    }
+  }
+  return {
+    diaObjetivo: "Sábado",
+    offset: 1,
+    ferias: FERIAS_DATA.filter((f) => f.dia === "Sábado")
+  };
+}
+
 function obtenerInfoDiaActual() {
   const ahora = new Date();
   const idx = ahora.getDay();
@@ -341,37 +356,55 @@ function obtenerInfoDiaActual() {
   const feriasHoy = FERIAS_DATA.filter((f) => f.dia === nombreHoy);
 
   if (feriasHoy.length > 0) {
+    // 6:00 a 12:59 -> Abierta en este momento
+    if (hora >= 6 && hora < 13) {
+      return {
+        phase: "abierta",
+        esDiaDeFeria: true,
+        abiertaAhora: true,
+        nombreHoy,
+        diaObjetivo: nombreHoy,
+        offset: 0,
+        ferias: feriasHoy
+      };
+    }
+
+    // Antes de las 6:00 -> Abre hoy temprano
+    if (hora < 6) {
+      return {
+        phase: "madrugada",
+        esDiaDeFeria: true,
+        abiertaAhora: false,
+        nombreHoy,
+        diaObjetivo: nombreHoy,
+        offset: 0,
+        ferias: feriasHoy
+      };
+    }
+
+    // 13:00 en adelante -> La feria de hoy ya cerró, mostramos la próxima jornada
+    const prox = buscarProximaJornada(idx);
     return {
-      esDiaDeFeria: true,
-      diaObjetivo: nombreHoy,
+      phase: "cerro-hoy",
+      esDiaDeFeria: false,
+      abiertaAhora: false,
       nombreHoy,
-      abiertaAhora: hora >= 6 && hora < 13,
-      ferias: feriasHoy
+      feriasHoyCerradas: feriasHoy,
+      diaObjetivo: prox.diaObjetivo,
+      offset: prox.offset,
+      ferias: prox.ferias
     };
   }
 
-  for (let offset = 1; offset <= 7; offset++) {
-    const sigNombre = DIAS_SEMANA[(idx + offset) % 7];
-    const sigFerias = FERIAS_DATA.filter((f) => f.dia === sigNombre);
-    if (sigFerias.length > 0) {
-      return {
-        esDiaDeFeria: false,
-        diaObjetivo: sigNombre,
-        nombreHoy,
-        abiertaAhora: false,
-        offset,
-        ferias: sigFerias
-      };
-    }
-  }
-
+  const prox = buscarProximaJornada(idx);
   return {
+    phase: "descanso",
     esDiaDeFeria: false,
-    diaObjetivo: "Sábado",
-    nombreHoy,
     abiertaAhora: false,
-    offset: 1,
-    ferias: FERIAS_DATA.filter((f) => f.dia === "Sábado")
+    nombreHoy,
+    diaObjetivo: prox.diaObjetivo,
+    offset: prox.offset,
+    ferias: prox.ferias
   };
 }
 
@@ -408,14 +441,14 @@ document.addEventListener("DOMContentLoaded", () => {
       const ny = (e.clientY - rect.top) / rect.height - 0.5;
       layers.forEach((el) => {
         const d = parseFloat(el.dataset.depth || "1");
-        const tx = (nx * 16 * d).toFixed(1);
-        const ty = (ny * 12 * d).toFixed(1);
+        const tx = (nx * 14 * d).toFixed(1);
+        const ty = (ny * 10 * d).toFixed(1);
         const rot = el.classList.contains("stage-card-main")
-          ? "-2deg"
+          ? "-1.5deg"
           : el.classList.contains("stage-card-side")
-          ? "4.5deg"
+          ? "3deg"
           : el.classList.contains("stage-card-stamp")
-          ? "-4.5deg"
+          ? "-3.5deg"
           : "0deg";
         el.style.transform = `translate3d(${tx}px, ${ty}px, 0) rotate(${rot})`;
       });
@@ -432,17 +465,16 @@ document.addEventListener("DOMContentLoaded", () => {
     const manifestoEl = document.getElementById("scene-manifesto");
     if (!manifestoEl || manifestoEl.classList.contains("is-visible")) return true;
     const rect = manifestoEl.getBoundingClientRect();
-    if (rect.width > 0 && rect.top < window.innerHeight * 0.95) {
+    if (rect.width > 0 && rect.top < window.innerHeight * 0.98) {
       manifestoEl.classList.add("is-visible");
       return true;
     }
     return false;
   }
 
-  // IntersectionObserver para el manifiesto cinético (palabras + tachado SVG)
   const sceneManifesto = document.getElementById("scene-manifesto");
   if (sceneManifesto) {
-    if ("IntersectionObserver" in window && !prefersReduced) {
+    if (!checkManifestoVisible() && "IntersectionObserver" in window && !prefersReduced) {
       const obs = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
@@ -452,7 +484,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
           });
         },
-        { threshold: 0.05 }
+        { threshold: 0.04 }
       );
       obs.observe(sceneManifesto);
       const onScrollManifesto = () => {
@@ -462,16 +494,16 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       };
       window.addEventListener("scroll", onScrollManifesto, { passive: true });
-      setTimeout(checkManifestoVisible, 200);
     } else {
       sceneManifesto.classList.add("is-visible");
     }
   }
 
   // ------------------------------------------------------------------------
-  // 2. Comparador Interactivo ON / OFF en Inicio
+  // 2. Comparador Interactivo ("El Pizarrón del Puesto")
   // ------------------------------------------------------------------------
   const sceneSwitch = document.getElementById("scene-switch");
+  const compareBody = document.getElementById("compare-body");
   const switchBullets = document.getElementById("switch-bullets");
   const cmpOrigen = document.getElementById("cmp-origen");
   const cmpOrigenPill = document.getElementById("cmp-origen-pill");
@@ -479,28 +511,48 @@ document.addEventListener("DOMContentLoaded", () => {
   const cmpPrecioPill = document.getElementById("cmp-precio-pill");
   const cmpDestino = document.getElementById("cmp-destino");
   const cmpDestinoPill = document.getElementById("cmp-destino-pill");
+  const modeOpts = document.querySelectorAll(".mode-toggle__opt");
 
-  document.querySelectorAll(".mode-toggle__opt").forEach((btn) => {
+  modeOpts.forEach((btn) => {
+    btn.setAttribute("aria-pressed", btn.dataset.mode === "on" ? "true" : "false");
     btn.addEventListener("click", () => {
       const mode = btn.dataset.mode;
       const data = COMPARE_STATES[mode];
-      if (!data || !sceneSwitch) return;
+      if (!data || !sceneSwitch || sceneSwitch.dataset.feria === mode) return;
+
       sceneSwitch.dataset.feria = mode;
-      switchBullets.innerHTML = data.bullets.map((b) => `<li>${b}</li>`).join("");
-      cmpOrigen.textContent = data.origen;
-      cmpOrigenPill.textContent = data.origenPill;
-      cmpPrecio.textContent = data.precio;
-      cmpPrecioPill.textContent = data.precioPill;
-      cmpDestino.textContent = data.destino;
-      cmpDestinoPill.textContent = data.destinoPill;
+      modeOpts.forEach((b) => b.setAttribute("aria-pressed", b === btn ? "true" : "false"));
+
+      if (compareBody && !prefersReduced) {
+        compareBody.classList.add("is-switching");
+        setTimeout(() => {
+          switchBullets.innerHTML = data.bullets.map((b) => `<li>${b}</li>`).join("");
+          cmpOrigen.textContent = data.origen;
+          cmpOrigenPill.textContent = data.origenPill;
+          cmpPrecio.textContent = data.precio;
+          cmpPrecioPill.textContent = data.precioPill;
+          cmpDestino.textContent = data.destino;
+          cmpDestinoPill.textContent = data.destinoPill;
+          compareBody.classList.remove("is-switching");
+        }, 120);
+      } else {
+        switchBullets.innerHTML = data.bullets.map((b) => `<li>${b}</li>`).join("");
+        cmpOrigen.textContent = data.origen;
+        cmpOrigenPill.textContent = data.origenPill;
+        cmpPrecio.textContent = data.precio;
+        cmpPrecioPill.textContent = data.precioPill;
+        cmpDestino.textContent = data.destino;
+        cmpDestinoPill.textContent = data.destinoPill;
+      }
     });
   });
 
   // ------------------------------------------------------------------------
-  // 3. Sistema de Pestañas (Tab Router) + Cajón "índice ="
+  // 3. Sistema de Pestañas (Tab Router) + Barra Móvil + Cajón "secciones ="
   // ------------------------------------------------------------------------
   const tabViews = document.querySelectorAll(".tab-view");
   const hudTabs = document.querySelectorAll(".hud-tab");
+  const mobTabs = document.querySelectorAll(".mob-tab");
   const indexCards = document.querySelectorAll(".index-card");
   const indexToggle = document.getElementById("index-toggle");
   const indexDrawer = document.getElementById("index-drawer");
@@ -526,6 +578,14 @@ document.addEventListener("DOMContentLoaded", () => {
       btn.classList.toggle("is-active", btn.dataset.goto === target);
     });
 
+    mobTabs.forEach((btn) => {
+      const active = btn.dataset.goto === target;
+      btn.classList.toggle("is-active", active);
+      if (active && btn.offsetParent !== null) {
+        btn.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", inline: "center", block: "nearest" });
+      }
+    });
+
     indexCards.forEach((card) => {
       card.classList.toggle("is-current", card.dataset.goto === target);
     });
@@ -533,14 +593,17 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleIndexDrawer(false);
 
     if (updateHash) {
-      history.replaceState(null, "", target === "inicio" ? "#inicio" : `#${target}`);
+      const nextHash = `#${target}`;
+      if (window.location.hash !== nextHash) {
+        history.pushState(null, "", nextHash);
+      }
     }
 
     window.scrollTo({ top: 0, behavior: prefersReduced ? "auto" : "smooth" });
 
     if (target === "inicio") {
       requestAnimationFrame(checkManifestoVisible);
-      setTimeout(checkManifestoVisible, 200);
+      setTimeout(checkManifestoVisible, 160);
     }
   }
 
@@ -550,51 +613,85 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Abrir pestaña según hash inicial si existe
+  window.addEventListener("hashchange", () => {
+    const hash = window.location.hash.replace("#", "").trim();
+    if (VALID_VIEWS.includes(hash)) {
+      switchView(hash, false);
+    }
+  });
+
   const initialHash = window.location.hash.replace("#", "").trim();
   if (VALID_VIEWS.includes(initialHash)) {
     switchView(initialHash, false);
   }
 
   // ------------------------------------------------------------------------
-  // 4. Estado en vivo del día + Gramática corregida (espera / esperan)
+  // 4. Estado en vivo inteligente según día y hora real
   // ------------------------------------------------------------------------
   const hudStatusDot = document.getElementById("hud-status-dot");
   const hudStatusLabel = document.getElementById("hud-status-label");
   const stageLiveFooter = document.getElementById("stage-live-footer");
   const todayTitle = document.getElementById("today-title");
   const todaySubtitle = document.getElementById("today-subtitle");
+  const todayHandnote = document.getElementById("today-handnote");
+  const tabHoyText = document.getElementById("tab-hoy-text");
   const countHoy = document.getElementById("count-hoy");
   const btnFilterToday = document.getElementById("btn-filter-today");
 
   const cant = estadoHoy.ferias.length;
   const wordFeria = cant === 1 ? "feria" : "ferias";
   const verbEsperar = cant === 1 ? "te espera" : "te esperan";
+  const cuandoTxt = estadoHoy.offset === 1 ? `mañana ${estadoHoy.diaObjetivo}` : `este ${estadoHoy.diaObjetivo}`;
+  const cuandoCap = cuandoTxt.charAt(0).toUpperCase() + cuandoTxt.slice(1);
 
   countHoy.textContent = String(cant);
 
-  if (estadoHoy.esDiaDeFeria) {
-    hudStatusDot.classList.remove("is-rest");
-    hudStatusLabel.textContent = `Hoy ${estadoHoy.nombreHoy}: ${cant} ${wordFeria} (6 a 13 hs)`;
-    stageLiveFooter.textContent = `@feriasfrancast.c · Hoy ${estadoHoy.nombreHoy} abren ${cant} ${wordFeria} de 6 a 13 hs`;
+  if (estadoHoy.phase === "abierta") {
+    hudStatusDot.className = "hud-file-dot";
+    hudStatusLabel.textContent = `Abierta ahora · Hoy ${estadoHoy.nombreHoy} (${cant} ${wordFeria})`;
+    stageLiveFooter.textContent = `@feriasfrancast.c · Abierta ahora hasta las 13:00 hs · Hoy ${estadoHoy.nombreHoy} (${cant} ${wordFeria})`;
 
-    todayTitle.textContent = `Hoy ${estadoHoy.nombreHoy} ${cant === 1 ? "abre 1 feria" : `abren ${cant} ferias`}`;
+    todayTitle.textContent = `¡Abierta ahora! Hoy ${estadoHoy.nombreHoy} ${cant === 1 ? "funciona 1 feria" : `funcionan ${cant} ferias`}`;
+    todaySubtitle.textContent = `${estadoHoy.ferias.map((f) => f.barrio).join(" · ")} (atendiendo hasta las 13:00 hs).`;
+    if (todayHandnote) todayHandnote.textContent = "Puestos abiertos en este momento · acercate con tu bolsa";
+    if (tabHoyText) tabHoyText.textContent = "Abiertas hoy";
+    btnFilterToday.textContent = `Mostrar ${cant === 1 ? "la de hoy" : "las de hoy"} (${cant})`;
+  } else if (estadoHoy.phase === "madrugada") {
+    hudStatusDot.className = "hud-file-dot is-soon";
+    hudStatusLabel.textContent = `Hoy ${estadoHoy.nombreHoy} · Abre 6:00 hs (${cant} ${wordFeria})`;
+    stageLiveFooter.textContent = `@feriasfrancast.c · Hoy ${estadoHoy.nombreHoy} abrimos de 6:00 a 13:00 hs (${cant} ${wordFeria})`;
+
+    todayTitle.textContent = `Hoy ${estadoHoy.nombreHoy} a las 6:00 hs ${cant === 1 ? "abre 1 feria" : `abren ${cant} ferias`}`;
     todaySubtitle.textContent = `${estadoHoy.ferias.map((f) => f.barrio).join(" · ")} (de 6:00 a 13:00 hs).`;
-    btnFilterToday.textContent = `Mostrar solo las de hoy (${cant})`;
+    if (todayHandnote) todayHandnote.textContent = "Ya salimos desde la colonia para armar los tablones temprano";
+    if (tabHoyText) tabHoyText.textContent = "Abren hoy";
+    btnFilterToday.textContent = `Ver ${wordFeria} de hoy (${cant})`;
+  } else if (estadoHoy.phase === "cerro-hoy") {
+    hudStatusDot.className = "hud-file-dot is-rest";
+    hudStatusLabel.textContent = `Cerró 13 hs · ${cuandoCap}: ${cant} ${wordFeria}`;
+    stageLiveFooter.textContent = `@feriasfrancast.c · Hoy ${estadoHoy.nombreHoy} atendimos de 6 a 13 hs · Próxima: ${cuandoTxt} (${cant} ${wordFeria})`;
+
+    todayTitle.textContent = `La feria de hoy ${estadoHoy.nombreHoy} cerró a las 13:00 hs · Próxima: ${estadoHoy.diaObjetivo}`;
+    todaySubtitle.textContent = `${cuandoCap} de 6:00 a 13:00 hs ${verbEsperar} ${cant} ${wordFeria}: ${estadoHoy.ferias.map((f) => f.barrio).join(" · ")}.`;
+    if (todayHandnote && estadoHoy.feriasHoyCerradas) {
+      todayHandnote.textContent = `Hoy ${estadoHoy.nombreHoy} funcionó: ${estadoHoy.feriasHoyCerradas.map((f) => f.barrio).join(" · ")}. ¡Te esperamos ${cuandoTxt}!`;
+    }
+    if (tabHoyText) tabHoyText.textContent = `Próxima (${estadoHoy.diaObjetivo})`;
+    btnFilterToday.textContent = `Ver ${wordFeria} del ${estadoHoy.diaObjetivo} (${cant})`;
   } else {
-    hudStatusDot.classList.add("is-rest");
-    const cuando = estadoHoy.offset === 1 ? `mañana ${estadoHoy.diaObjetivo}` : `este ${estadoHoy.diaObjetivo}`;
-    const cuandoCap = cuando.charAt(0).toUpperCase() + cuando.slice(1);
+    hudStatusDot.className = "hud-file-dot is-rest";
     hudStatusLabel.textContent = `Próxima feria: ${estadoHoy.diaObjetivo} (${cant} ${wordFeria})`;
     stageLiveFooter.textContent = `@feriasfrancast.c · Hoy ${estadoHoy.nombreHoy} descansamos · Próxima feria: ${estadoHoy.diaObjetivo} (${cant} ${wordFeria})`;
 
     todayTitle.textContent = `Hoy ${estadoHoy.nombreHoy} no hay feria · Próxima: ${estadoHoy.diaObjetivo}`;
-    todaySubtitle.textContent = `${cuandoCap} ${verbEsperar} ${cant} ${wordFeria}: ${estadoHoy.ferias.map((f) => f.barrio).join(" · ")}.`;
+    todaySubtitle.textContent = `${cuandoCap} de 6:00 a 13:00 hs ${verbEsperar} ${cant} ${wordFeria}: ${estadoHoy.ferias.map((f) => f.barrio).join(" · ")}.`;
+    if (todayHandnote) todayHandnote.textContent = "Traé tu bolsa reutilizable que desde las 6 de la mañana estamos";
+    if (tabHoyText) tabHoyText.textContent = `Próxima (${estadoHoy.diaObjetivo})`;
     btnFilterToday.textContent = `Ver ${wordFeria} del ${estadoHoy.diaObjetivo} (${cant})`;
   }
 
   // ------------------------------------------------------------------------
-  // 5. Render y filtros de las 21 Ferias
+  // 5. Render, estado de filtros y copiar dirección en las 21 Ferias
   // ------------------------------------------------------------------------
   let filtroDia = "todas";
   let textoBusqueda = "";
@@ -602,9 +699,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const feriasGrid = document.getElementById("ferias-grid");
   const dayTabs = document.querySelectorAll(".day-tab");
   const searchInput = document.getElementById("ferias-search");
+  const feriasCountLabel = document.getElementById("ferias-count-label");
+  const feriasResetBtn = document.getElementById("ferias-reset-btn");
 
   function renderFerias() {
-    const query = normalizarTexto(textoBusqueda.trim());
+    const queryRaw = textoBusqueda.trim();
+    const query = normalizarTexto(queryRaw);
     const diaRealFiltro = filtroDia === "hoy" ? estadoHoy.diaObjetivo : filtroDia;
 
     const filtradas = FERIAS_DATA.filter((f) => {
@@ -614,28 +714,63 @@ document.addEventListener("DOMContentLoaded", () => {
       return normalizarTexto(`${f.barrio} ${f.direccion} ${f.dia} ${f.tag}`).includes(query);
     });
 
+    const hayFiltroActivo = filtroDia !== "todas" || query.length > 0;
+    if (feriasResetBtn) {
+      feriasResetBtn.hidden = !hayFiltroActivo;
+    }
+
+    if (feriasCountLabel) {
+      if (!hayFiltroActivo) {
+        feriasCountLabel.textContent = "Mostrando las 21 ferias activas en Posadas";
+      } else {
+        const partes = [];
+        if (filtroDia !== "todas") partes.push(`Día: ${diaRealFiltro}`);
+        if (queryRaw) partes.push(`Búsqueda: “${queryRaw}”`);
+        feriasCountLabel.textContent = `Mostrando ${filtradas.length} de 21 ferias · ${partes.join(" · ")}`;
+      }
+    }
+
     if (filtradas.length === 0) {
       feriasGrid.innerHTML = `
         <div class="ferias-empty">
-          No encontramos ferias con “${textoBusqueda}” para ese filtro. Probá buscando otro barrio o seleccionando “Todas”.
+          <p>No encontramos ferias con “${queryRaw}” para ese día.</p>
+          <button type="button" class="pill-btn pill-btn--violeta pill-btn--sm" id="empty-reset-btn">Mostrar las 21 ferias</button>
         </div>`;
+      const emptyBtn = document.getElementById("empty-reset-btn");
+      if (emptyBtn) emptyBtn.addEventListener("click", resetearFiltrosFerias);
       return;
     }
 
     feriasGrid.innerHTML = filtradas
-      .map((f) => {
-        let badgeHtml = "";
+      .map((f, idx) => {
+        const badges = [];
+        if (f.dia === estadoHoy.diaObjetivo) {
+          const liveTxt =
+            estadoHoy.phase === "abierta"
+              ? "Abierta ahora"
+              : estadoHoy.phase === "madrugada"
+              ? "Abre hoy 6 hs"
+              : estadoHoy.offset === 1
+              ? "Abre mañana"
+              : "Próxima";
+          const liveCls = estadoHoy.phase === "abierta" ? "badge-tag--live" : "badge-tag--proxima";
+          badges.push(`<span class="badge-tag ${liveCls}">${liveTxt}</span>`);
+        }
         if (f.tag) {
           const clase = f.tagTipo === "historica" ? "badge-tag--marron" : "badge-tag--verde";
-          badgeHtml = `<span class="badge-tag ${clase}">${f.tag}</span>`;
+          badges.push(`<span class="badge-tag ${clase}">${f.tag}</span>`);
         }
+
         const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(f.mapsQuery)}`;
+        const copyText = `${f.barrio} (${f.dia}, ${f.horario}): ${f.direccion}, Posadas`;
+        const isNextHighlight = f.dia === estadoHoy.diaObjetivo ? " feria-card--destacada" : "";
+
         return `
-          <article class="feria-card">
+          <article class="feria-card${isNextHighlight}" style="--card-i:${Math.min(idx, 10)}">
             <div>
               <div class="feria-card__top">
                 <span class="feria-card__day">${f.dia}</span>
-                ${badgeHtml}
+                <div class="feria-card__badges">${badges.join("")}</div>
               </div>
               <h3 class="feria-card__title">${f.barrio}</h3>
               <p class="feria-card__address">${f.direccion}</p>
@@ -645,14 +780,25 @@ document.addEventListener("DOMContentLoaded", () => {
                 <svg class="inline-clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
                 ${f.horario}
               </span>
-              <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="feria-card__map">
-                Ver en mapa ↗
-              </a>
+              <div class="feria-card__actions">
+                <button type="button" class="feria-card__copy" data-copy="${copyText.replace(/"/g, "&quot;")}" title="Copiar dirección">
+                  Copiar
+                </button>
+                <a href="${mapsUrl}" target="_blank" rel="noopener noreferrer" class="feria-card__map">
+                  Mapa ↗
+                </a>
+              </div>
             </div>
           </article>
         `;
       })
       .join("");
+  }
+
+  function resetearFiltrosFerias() {
+    textoBusqueda = "";
+    if (searchInput) searchInput.value = "";
+    activarTabDia("todas");
   }
 
   function activarTabDia(dia) {
@@ -669,11 +815,36 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => activarTabDia(btn.dataset.day));
   });
 
-  btnFilterToday.addEventListener("click", () => activarTabDia("hoy"));
+  btnFilterToday.addEventListener("click", () => {
+    activarTabDia("hoy");
+    feriasGrid.scrollIntoView({ behavior: prefersReduced ? "auto" : "smooth", block: "nearest" });
+  });
+
+  if (feriasResetBtn) {
+    feriasResetBtn.addEventListener("click", resetearFiltrosFerias);
+  }
 
   searchInput.addEventListener("input", (e) => {
     textoBusqueda = e.target.value;
     renderFerias();
+  });
+
+  feriasGrid.addEventListener("click", async (e) => {
+    const copyBtn = e.target.closest(".feria-card__copy");
+    if (!copyBtn) return;
+    const text = copyBtn.dataset.copy || "";
+    try {
+      await navigator.clipboard.writeText(text);
+      const prev = copyBtn.textContent;
+      copyBtn.textContent = "¡Copiada!";
+      copyBtn.classList.add("is-copied");
+      setTimeout(() => {
+        copyBtn.textContent = prev;
+        copyBtn.classList.remove("is-copied");
+      }, 1800);
+    } catch {
+      copyBtn.textContent = "Listo";
+    }
   });
 
   renderFerias();
@@ -689,8 +860,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const lista = PRODUCTOS_DATA.filter((p) => catActiva === "todos" || p.cat === catActiva);
     productosGrid.innerHTML = lista
       .map(
-        (p) => `
-        <article class="prod-card">
+        (p, idx) => `
+        <article class="prod-card" style="--card-i:${idx}">
           <div>
             <div class="prod-card__icon" aria-hidden="true">${p.icon}</div>
             <h3 class="prod-card__title">${p.titulo}</h3>
